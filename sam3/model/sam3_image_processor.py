@@ -215,8 +215,18 @@ class Sam3Processor:
             align_corners=False,
         ).sigmoid()
 
+        out_semantic_masks = interpolate(
+            outputs["semantic_seg"],
+            (img_h, img_w),
+            mode="bilinear",
+            align_corners=False,
+        ).sigmoid()
+
         state["masks_logits"] = out_masks
         state["masks"] = out_masks > 0.5
         state["boxes"] = boxes
         state["scores"] = out_probs
+        state["semantic_mask_logits"] = out_semantic_masks  # for SS
+        state["presence_score"] = presence_score.squeeze().squeeze()
+        state["object_score"] = out_probs
         return state
